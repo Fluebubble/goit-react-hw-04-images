@@ -3,8 +3,8 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import Searchbar from './Searchbar/Searchbar';
 import { getImages } from '../api/api';
 import { Button } from './Button/Button';
-import { Dna } from 'react-loader-spinner';
 import Modal from './Modal/Modal';
+import Loader from './Loader/Loader';
 
 class App extends Component {
   state = {
@@ -98,7 +98,6 @@ class App extends Component {
         <Searchbar
           onSubmit={this.handleSubmit}
           query={this.state.query}
-          onChange={this.handleChange}
         />
         <ImageGallery
           pictures={this.state.pictures}
@@ -108,23 +107,15 @@ class App extends Component {
           style={{
             display: 'flex',
             justifyContent: 'center',
-            marginTop: '15px'
+            marginTop: '15px',
           }}
         >
-          {/* {this.state.currentResponseLength === 12 && (
-            <Button loadMore={this.loadMore} />
-          )} */}
           {this.state.isLoading ? (
-            <Dna
-              visible={true}
-              height="120"
-              width="120"
-              ariaLabel="dna-loading"
-              wrapperStyle={{}}
-              wrapperClass="dna-wrapper"
-            />
-          ) : this.state.currentResponseLength === 12 && (
-            <Button loadMore={this.loadMore} />
+            <Loader />
+          ) : (
+            this.state.currentResponseLength === 12 && (
+              <Button loadMore={this.loadMore} />
+            )
           )}
         </div>
       </>
