@@ -1,36 +1,38 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { useEffect } from 'react';
 
-class Modal extends Component {
-  closeModal = e => {
+const Modal = ({ toggleModal, image }) => {
+  const closeModal = e => {
     if (e.key === 'Escape') {
       console.log(e.key, '- Pressed');
-      this.props.closeModal();
+      closeModal();
     }
   };
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.closeModal);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.closeModal);
-  }
-  render() {
-    const { link, alt } = this.props.image;
-    return (
-      <div
-        className="Overlay"
-        onClick={e => {
-          if (e.target.className === 'Overlay') {
-            this.props.closeModal();
-          }
-        }}
-      >
-        <div className="Modal">
-          <img src={link} alt={alt} />
-        </div>
+  useEffect(() => {
+    window.addEventListener('keydown', closeModal);
+    return () => {
+      window.removeEventListener('keydown', closeModal);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { link, alt } = image;
+
+  return (
+    <div
+      className="Overlay"
+      onClick={e => {
+        if (e.target.className === 'Overlay') {
+          toggleModal();
+        }
+      }}
+    >
+      <div className="Modal">
+        <img src={link} alt={alt} />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default Modal;

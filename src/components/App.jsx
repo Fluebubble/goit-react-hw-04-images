@@ -1,126 +1,95 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import Searchbar from './Searchbar/Searchbar';
 import { getImages } from '../api/api';
 import { Button } from './Button/Button';
 import Modal from './Modal/Modal';
 import Loader from './Loader/Loader';
+import { useState } from 'react';
 
-class App extends Component {
-  state = {
-    query: '',
-    pictures: [],
-    page: 1,
-    isLoading: false,
-    currentResponseLength: 0,
-    showModal: false,
-    modalImage: null,
-  };
+const App = () => {
+  const [query, setQuery] = useState('');
+  const [pictures, setPictures] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentResponseLength, setCurrentResponseLength] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
 
-  handleChange = e => {
-    const query = e.currentTarget.value;
-    this.setState({ query });
-  };
-
-  handleSubmit = async (e, query) => {
+  const handleSubmit = async (e, query) => {
     e.preventDefault();
-    this.setState({
-      query,
-      page: 1,
-      pictures: [],
-      currentResponseLength: 0,
-    });
-    e.target.reset();
-  };
-
-  loadMore = () => {
-    this.setState(prevState => {
-      return {
-        page: prevState.page + 1,
-      };
-    });
-  };
-
-  toggleModal = () => {
-    this.setState(state => {
-      return {
-        showModal: !state.showModal,
-      };
-    });
-  };
-
-  getImageProps = e => {
-    e.preventDefault();
-    this.setState({
-      modalImage: {
-        link: this.state.pictures[e.currentTarget.id].largeImageURL,
-        alt: this.state.pictures[e.currentTarget.id].tags,
-      },
-    });
-    this.toggleModal();
-  };
-
-  async componentDidUpdate(_, prevState) {
-    if (
-      prevState.query !== this.state.query ||
-      prevState.page !== this.state.page
-    ) {
-      try {
-        this.setState({ isLoading: true });
-        const response = await getImages(this.state.query, this.state.page);
-        console.log('response ====', response);
-        if (prevState.query !== this.state.query) {
-          this.setState({
-            pictures: response,
-            currentResponseLength: response.length,
-          });
-        } else {
-          this.setState({
-            pictures: [...prevState.pictures, ...response],
-            currentResponseLength: response.length,
-          });
-        }
-      } catch (error) {
-        // this.setState({ error });
+    setPage(1);
+    getImages(query, page)
+      .then(response => {
+        console.log(response);
+        setPictures(response);
+        setCurrentResponseLength(response.length);
+        setPage(state => state + 1);
+      })
+      .catch(error => {
         console.log(error);
-      } finally {
-        this.setState({ isLoading: false });
-      }
-    }
-  }
-  render() {
-    console.log(this.state.currentResponseLength);
-    return (
-      <>
-        {this.state.showModal && (
-          <Modal image={this.state.modalImage} closeModal={this.toggleModal} />
+      })
+      .finally(() => {
+        setIsLoading(false);
+        e.target.reset();
+      });
+  };
+
+  const handleChange = e => {
+    setQuery(e.target.value);
+  };
+  const loadMore = () => {
+    getImages(query, page)
+      .then(response => {
+        setPictures(state => [...state, ...response]);
+        setCurrentResponseLength(response.length);
+        setPage(state => state + 1);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const toggleModal = () => {
+    setShowModal(state => !state);
+  };
+
+  const getImageProps = e => {
+    e.preventDefault();
+    setModalImage({
+      link: pictures[e.currentTarget.id].largeImageURL,
+      alt: pictures[e.currentTarget.id].tags,
+    });
+    toggleModal();
+  };
+
+  return (
+    <>
+      {showModal && <Modal image={modalImage} toggleModal={toggleModal} />}
+      <Searchbar
+        onSubmit={handleSubmit}
+        query={query}
+        onChange={handleChange}
+      />
+      <ImageGallery pictures={pictures} onClick={getImageProps} />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginTop: '15px',
+        }}
+      >
+        {isLoading ? (
+          <Loader />
+        ) : (
+          currentResponseLength === 12 && <Button loadMore={loadMore} />
         )}
-        <Searchbar
-          onSubmit={this.handleSubmit}
-          query={this.state.query}
-        />
-        <ImageGallery
-          pictures={this.state.pictures}
-          onClick={this.getImageProps}
-        />
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '15px',
-          }}
-        >
-          {this.state.isLoading ? (
-            <Loader />
-          ) : (
-            this.state.currentResponseLength === 12 && (
-              <Button loadMore={this.loadMore} />
-            )
-          )}
-        </div>
-      </>
-    );
-  }
-}
+      </div>
+    </>
+  );
+};
 
 export default App;
