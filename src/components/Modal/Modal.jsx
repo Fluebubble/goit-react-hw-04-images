@@ -14,7 +14,6 @@ const Modal = ({ toggleModal, image }) => {
     return () => {
       window.removeEventListener('keydown', closeModal);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { link, alt } = image;
