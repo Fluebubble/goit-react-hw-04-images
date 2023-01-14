@@ -6,6 +6,7 @@ import { Button } from './Button/Button';
 import Modal from './Modal/Modal';
 import Loader from './Loader/Loader';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 const App = () => {
   const [query, setQuery] = useState('');
@@ -18,27 +19,39 @@ const App = () => {
 
   const handleSubmit = async (e, query) => {
     e.preventDefault();
-    setPage(1);
+    setQuery(query);
+    e.target.reset();
+  };
+  useEffect(() => {
+    console.log('useEffect with [query]');
+    if (query === '') {
+      console.log('first useEffect with [query], returning');
+
+      return;
+    }
     getImages(query, page)
       .then(response => {
         console.log(response);
         setPictures(response);
         setCurrentResponseLength(response.length);
-        setPage(state => state + 1);
       })
       .catch(error => {
         console.log(error);
       })
       .finally(() => {
         setIsLoading(false);
-        e.target.reset();
       });
-  };
+    console.log('query is =', query);
+  }, [query]);
 
-  const handleChange = e => {
-    setQuery(e.target.value);
-  };
-  const loadMore = () => {
+  useEffect(() => {
+    console.log('useEffect with [page]');
+    if (page === 1) {
+      console.log('page is === 1, return');
+      return;
+    }
+
+    console.log('page is !== 1, getImages(query, page)');
     getImages(query, page)
       .then(response => {
         setPictures(state => [...state, ...response]);
@@ -51,6 +64,14 @@ const App = () => {
       .finally(() => {
         setIsLoading(false);
       });
+  }, [page]);
+
+  const handleChange = e => {
+    setQuery(e.target.value);
+  };
+  const loadMore = () => {
+    console.log('loading more, page += 1');
+    setPage(state => state + 1);
   };
 
   const toggleModal = () => {

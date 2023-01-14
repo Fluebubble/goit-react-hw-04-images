@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-const Searchbar = ({ onSubmit, onChange, query }) => {
-  // const [query, setQuery] = useState('Cocker');
+const Searchbar = ({ onSubmit }) => {
+  const [query, setQuery] = useState('Cocker');
 
   // const handleChange = e => {
   //   setQuery(e.currentTarget.value);
@@ -19,7 +19,9 @@ const Searchbar = ({ onSubmit, onChange, query }) => {
           type="text"
           placeholder="Search images and photos"
           name="searchQuery"
-          onChange={onChange}
+          onChange={e => {
+            setQuery(e.target.value);
+          }}
         />
       </form>
     </div>
