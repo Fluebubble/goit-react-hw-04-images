@@ -19,58 +19,46 @@ const App = () => {
 
   const handleSubmit = async (e, query) => {
     e.preventDefault();
+    setPage(1);
     setQuery(query);
     e.target.reset();
   };
+
   useEffect(() => {
-    console.log('useEffect with [query]');
     if (query === '') {
-      console.log('first useEffect with [query], returning');
-
       return;
     }
-    getImages(query, page)
-      .then(response => {
-        console.log(response);
-        setPictures(response);
-        setCurrentResponseLength(response.length);
-      })
-      .catch(error => {
-        console.log(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-    console.log('query is =', query);
-  }, [query]);
-
-  useEffect(() => {
-    console.log('useEffect with [page]');
     if (page === 1) {
-      console.log('page is === 1, return');
+      setIsLoading(true);
+      getImages(query, page)
+        .then(r => {
+          setPictures(r);
+          console.log(r.length);
+          setCurrentResponseLength(r.length);
+        })
+        .catch(console.log)
+        .finally(() => {
+          setIsLoading(false);
+        });
       return;
     }
-
-    console.log('page is !== 1, getImages(query, page)');
+    setIsLoading(true);
     getImages(query, page)
-      .then(response => {
-        setPictures(state => [...state, ...response]);
-        setCurrentResponseLength(response.length);
-        setPage(state => state + 1);
+      .then(r => {
+        setPictures(state => [...state, ...r]);
+        console.log(r.length);
+        setCurrentResponseLength(r.length);
       })
-      .catch(error => {
-        console.log(error);
-      })
+      .catch(console.log)
       .finally(() => {
         setIsLoading(false);
       });
-  }, [page]);
+  }, [page, query]);
 
   const handleChange = e => {
     setQuery(e.target.value);
   };
   const loadMore = () => {
-    console.log('loading more, page += 1');
     setPage(state => state + 1);
   };
 
