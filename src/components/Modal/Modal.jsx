@@ -3,14 +3,13 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 const Modal = ({ toggleModal, image }) => {
-  const closeModal = e => {
-    if (e.key === 'Escape') {
-      console.log(e.key, '- Pressed');
-      closeModal();
-    }
-  };
-
   useEffect(() => {
+    const closeModal = e => {
+      if (e.key === 'Escape') {
+        console.log(e.key, '- Pressed');
+        closeModal();
+      }
+    };
     window.addEventListener('keydown', closeModal);
     return () => {
       window.removeEventListener('keydown', closeModal);

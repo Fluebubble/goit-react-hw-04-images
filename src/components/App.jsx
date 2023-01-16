@@ -55,9 +55,9 @@ const App = () => {
       });
   }, [page, query]);
 
-  const handleChange = e => {
-    setQuery(e.target.value);
-  };
+  // const handleChange = e => {
+  //   setQuery(e.target.value);
+  // };
   const loadMore = () => {
     setPage(state => state + 1);
   };
