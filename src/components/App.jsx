@@ -80,8 +80,6 @@ const App = () => {
       {showModal && <Modal image={modalImage} toggleModal={toggleModal} />}
       <Searchbar
         onSubmit={handleSubmit}
-        query={query}
-        onChange={handleChange}
       />
       <ImageGallery pictures={pictures} onClick={getImageProps} />
       <div
