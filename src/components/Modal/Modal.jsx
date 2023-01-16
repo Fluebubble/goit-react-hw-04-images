@@ -1,5 +1,6 @@
 import React from 'react';
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const Modal = ({ toggleModal, image }) => {
   const closeModal = e => {
@@ -32,6 +33,11 @@ const Modal = ({ toggleModal, image }) => {
       </div>
     </div>
   );
+};
+
+Modal.propTypes = {
+  toggleModal: PropTypes.func.isRequired,
+  image: PropTypes.object.isRequired,
 };
 
 export default Modal;
